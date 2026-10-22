@@ -1,0 +1,11 @@
+# 이 파일을 복사해서 .env.local 로 이름을 바꾸고 값을 채워 주세요.
+# Supabase 대시보드 > Project Settings > API 에서 확인할 수 있어요.
+
+# 프로젝트 주소
+NEXT_PUBLIC_SUPABASE_URL=https://hrpnrmvwtipfoyyfovzj.supabase.co
+
+# 공개용 키 (anon 또는 publishable 키). service_role / secret 키는 절대 넣지 마세요.
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhycG5ybXZ3dGlwZm95eWZvdnpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MzYzODksImV4cCI6MjEwODIxMjM4OX0.e7Fwx0mZiM1EHT3Pgez7_L2kI0d9JrPeIBIlexVckRk
+
+
+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
