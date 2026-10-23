@@ -24,17 +24,27 @@ create unique index if not exists profiles_nickname_key on public.profiles (lowe
 create table if not exists public.items (
   id    text primary key,
   name  text not null,
-  slot  text not null check (slot in ('head','face','neck')),
+  slot  text not null check (slot in ('head','face','neck','back')),
   need  integer not null,   -- 열리는 최고 기록(m)
   price integer not null,   -- 지폐
   sort  integer not null default 0
 );
 insert into public.items (id, name, slot, need, price, sort) values
-  ('ribbon',  '리본',          'head',  50,  20, 1),
-  ('hat',     '밀짚모자',      'head', 100,  40, 2),
-  ('glasses', '동그란 안경',   'face', 150,  60, 3),
-  ('scarf',   '줄무늬 목도리', 'neck', 200,  90, 4),
-  ('crown',   '왕관',          'head', 300, 150, 5)
+  ('bandaid',    '반창고',          'face',  30,  10,  1),
+  ('ribbon',     '리본',            'head',  50,  20,  2),
+  ('balloon',    '풍선',            'back',  80,  30,  3),
+  ('hat',        '밀짚모자',        'head', 100,  40,  4),
+  ('partyhat',   '꼬깔모자',        'head', 120,  50,  5),
+  ('glasses',    '동그란 안경',     'face', 150,  60,  6),
+  ('sunglasses', '선글라스',        'face', 180,  70,  7),
+  ('scarf',      '줄무늬 목도리',   'neck', 200,  90,  8),
+  ('cape',       '망토',            'back', 220,  80,  9),
+  ('bowtie',     '나비넥타이',      'neck', 250, 100, 10),
+  ('crown',      '왕관',            'head', 300, 150, 11),
+  ('beanie',     '털모자',          'head', 350, 130, 12),
+  ('catears',    '고양이 귀 머리띠', 'head', 400, 180, 13),
+  ('batwings',   '박쥐 날개',       'back', 450, 220, 14),
+  ('angelwings', '천사 날개',       'back', 500, 250, 15)
 on conflict (id) do update
   set name = excluded.name, slot = excluded.slot, need = excluded.need,
       price = excluded.price, sort = excluded.sort;
@@ -176,7 +186,7 @@ declare
   r  public.profiles;
 begin
   if auth.uid() is null then raise exception 'not_signed_in'; end if;
-  if p_slot not in ('head','face','neck') then raise exception 'bad_slot'; end if;
+  if p_slot not in ('head','face','neck','back') then raise exception 'bad_slot'; end if;
 
   if p_item is null then
     update public.profiles set wear = wear - p_slot, updated_at = now()

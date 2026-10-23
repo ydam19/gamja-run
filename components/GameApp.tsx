@@ -5,7 +5,7 @@ import { createGame, type Game, type RunEnd } from '@/lib/game/engine';
 import { api, ApiError } from '@/lib/api';
 import { createClient } from '@/lib/supabase/client';
 import type { Item, Profile } from '@/lib/types';
-import Look, { outfitSrc, wornIds } from './Look';
+import Look, { FLAP, outfitSrc, splitWear } from './Look';
 import BillIcon from './BillIcon';
 import ThemeToggle from './ThemeToggle';
 import Closet from './Closet';
@@ -83,9 +83,18 @@ export default function GameApp() {
   const refreshTheme = useCallback(() => gameRef.current?.refreshTheme(), []);
 
   /* ---------- 입은 옷을 게임에도 ---------- */
-  const worn = useMemo(() => wornIds(profile?.wear), [profile?.wear]);
+  const worn = useMemo(() => splitWear(profile?.wear), [profile?.wear]);
   useEffect(() => {
-    gameRef.current?.setOutfit(worn.map((id) => ({ calm: outfitSrc(id, 'calm'), cry: outfitSrc(id, 'cry') })));
+    const layer = (id: string, where: 'front' | 'back') => ({
+      calm: outfitSrc(id, 'calm'),
+      cry: outfitSrc(id, 'cry'),
+      layer: where,
+      flap: FLAP[id] ?? 0,
+    });
+    gameRef.current?.setOutfit([
+      ...worn.back.map((id) => layer(id, 'back')),
+      ...worn.front.map((id) => layer(id, 'front')),
+    ]);
   }, [worn]);
 
   /* ---------- 내 정보 불러오기 ---------- */
@@ -191,7 +200,7 @@ export default function GameApp() {
 
       {auth === 'in' && profile && screen === 'title' && (
         <section className="panel">
-          <Look hero ids={worn} label="감자" />
+          <Look hero {...worn} label="감자" />
           <h1>감자 달려</h1>
           <p>
             화면을 누르면 점프해요.
@@ -228,7 +237,7 @@ export default function GameApp() {
 
       {auth === 'in' && profile && screen === 'over' && showOver && (
         <section className="panel">
-          <Look hero pose="cry" ids={worn} label="우는 감자" />
+          <Look hero pose="cry" {...worn} label="우는 감자" />
           <h2>{overTitle}</h2>
           <p className="lines">{overLines.join('\n')}</p>
           <div className="btnrow">

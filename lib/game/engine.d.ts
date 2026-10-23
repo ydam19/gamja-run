@@ -15,7 +15,7 @@ export interface GameOptions {
 
 export interface Game {
   start(): void;
-  setOutfit(list: { calm: string; cry: string }[]): void;
+  setOutfit(list: { calm: string; cry: string; layer?: 'front' | 'back'; flap?: number }[]): void;
   refreshTheme(): void;
   destroy(): void;
   getState(): GameState;

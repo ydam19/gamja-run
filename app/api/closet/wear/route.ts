@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { fail, fromDbError, getAuthed } from '@/lib/server-helpers';
 
-const SLOTS = ['head', 'face', 'neck'];
+const SLOTS = ['head', 'face', 'neck', 'back'];
 
 /** 옷 입기 / 벗기 (itemId 가 null 이면 벗기) */
 export async function POST(request: Request) {

@@ -1,4 +1,4 @@
-export type Slot = 'head' | 'face' | 'neck';
+export type Slot = 'head' | 'face' | 'neck' | 'back';
 
 export interface Item {
   id: string;

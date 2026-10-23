@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { api, ApiError } from '@/lib/api';
 import type { Item, Profile } from '@/lib/types';
-import Look, { wornIds } from './Look';
+import Look, { splitWear } from './Look';
 
 const MESSAGES: Record<string, string> = {
   not_enough: '지폐가 모자라요.',
@@ -42,7 +42,7 @@ export default function Closet({
   return (
     <section className="panel scroll">
       <h2>감자 옷장</h2>
-      <Look hero ids={wornIds(profile.wear)} label="지금 입은 옷" />
+      <Look hero {...splitWear(profile.wear)} label="지금 입은 옷" />
       <p className="closet-info">
         내 지폐 {profile.bills}장, 최고 기록 {profile.best}m
       </p>
@@ -55,7 +55,7 @@ export default function Closet({
           const enough = profile.bills >= it.price;
           return (
             <div key={it.id} className={`item${open ? '' : ' locked'}${on ? ' worn' : ''}`}>
-              <Look ids={[it.id]} />
+              <Look front={it.slot === 'back' ? [] : [it.id]} back={it.slot === 'back' ? [it.id] : []} />
               <div className="nm">{it.name}</div>
               {!open && <div className="st">최고 {it.need}m 달리면 열려요</div>}
               {open && !own && (
