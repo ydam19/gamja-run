@@ -1,0 +1,47 @@
+name: 저장소 정리
+
+on:
+  push:
+    paths:
+      - '.github/workflows/repair.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 흩어진 파일 정리
+        run: |
+          rm -rf fix-v1.2
+          rm -f 002_new_items.sql 003_back_items.sql 004_leaderboard_all.sql schema.sql
+          rm -f Closet.tsx GameApp.tsx Look.tsx Ranking.tsx
+          rm -f engine.js engine.d.ts server.ts types.ts route.ts
+          rm -f outfit-*.png update-v1.2.zip fix-v1.2.zip
+
+      - name: middleware.ts 되살리기
+        run: |
+          cat > middleware.ts <<'EOF'
+          import type { NextRequest } from 'next/server';
+          import { updateSession } from '@/lib/supabase/middleware';
+
+          export async function middleware(request: NextRequest) {
+            return updateSession(request);
+          }
+
+          export const config = {
+            // 이미지와 정적 파일에는 돌리지 않아요.
+            matcher: ['/((?!_next/static|_next/image|images/|icon.png|apple-icon.png|favicon.ico).*)'],
+          };
+          EOF
+
+      - name: 커밋하고 올리기
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add -A
+          git commit -m "저장소 정리" || echo "바뀐 것이 없어요"
+          git push
