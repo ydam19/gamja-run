@@ -1,11 +1,28 @@
-import type { NextRequest } from 'next/server';
-import { updateSession } from '@/lib/supabase/middleware';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  return updateSession(request);
+/** 요청마다 로그인 세션을 새로 고쳐서 쿠키에 다시 담아요. */
+export async function updateSession(request: NextRequest) {
+  let response = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
+        },
+      },
+    },
+  );
+
+  // 꼭 getUser()를 불러야 만료된 세션이 갱신돼요.
+  await supabase.auth.getUser();
+  return response;
 }
-
-export const config = {
-  // 이미지와 정적 파일에는 돌리지 않아요.
-  matcher: ['/((?!_next/static|_next/image|images/|icon.png|apple-icon.png|favicon.ico).*)'],
-};
