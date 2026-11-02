@@ -1,0 +1,36 @@
+name: 업데이트 zip 적용
+
+on:
+  push:
+    paths:
+      - '*.zip'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 압축 풀어서 덮어쓰기
+        run: |
+          shopt -s nullglob
+          for z in *.zip; do
+            echo "적용: $z"
+            unzip -o "$z" -d .
+            git rm -q "$z"
+          done
+          if [ -f cleanup.sh ]; then
+            bash cleanup.sh
+            rm -f cleanup.sh
+          fi
+
+      - name: 커밋하고 올리기
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git add -A
+          git commit -m "업데이트 zip 적용" || echo "바뀐 것이 없어요"
+          git push
