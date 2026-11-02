@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import type { Leaderboard } from '@/lib/types';
 
-/** 랭킹: 닉네임과 최고 기록 TOP 20 */
+/** 랭킹: 기록이 있는 모든 사용자 */
 export default function Ranking({ onClose }: { onClose: () => void }) {
   const [data, setData] = useState<Leaderboard | null>(null);
   const [error, setError] = useState(false);

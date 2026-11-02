@@ -3,7 +3,7 @@ import { fail, fromDbError, getAuthed } from '@/lib/server-helpers';
 
 export const dynamic = 'force-dynamic';
 
-/** 랭킹 TOP 20 + 내 순위 */
+/** 랭킹(모든 사용자) + 내 순위 */
 export async function GET() {
   const { supabase, user } = await getAuthed();
   if (!user) return fail(401, 'not_signed_in');
